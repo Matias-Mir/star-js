@@ -6,18 +6,12 @@ const c = canvas.getContext('2d')
 canvas.width = innerWidth
 canvas.height = innerHeight
 
-const mouse = {
-    x: innerWidth / 2,
-    y: innerHeight / 2
-}
+
 
 const colors = ['#2185C5', '#7ECEFD', '#FFF6E5', '#FF7F66']
 
 // Event Listeners
-addEventListener('mousemove', event => {
-    mouse.x = event.clientX
-    mouse.y = event.clientY
-})
+
 
 addEventListener('resize', () => {
     canvas.width = innerWidth
@@ -27,14 +21,18 @@ addEventListener('resize', () => {
 })
 
 // Objects
-function Object(x, y, radius, color) {
+function Star(x, y, radius, color) {
     this.x = x
     this.y = y
     this.radius = radius
     this.color = color
+    this.velocity = {
+        x: 0, 
+        y: 3
+    }
 }
 
-Object.prototype.draw = function() {
+Star.prototype.draw = function() {
     c.beginPath()
     c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false)
     c.fillStyle = this.color
@@ -42,17 +40,27 @@ Object.prototype.draw = function() {
     c.closePath()
 }
 
-Object.prototype.update = function() {
+Star.prototype.update = function() {
     this.draw()
+
+    //when ball hits bottom of screen
+    if (this.y + this.radius > canvas.height){
+        this.velocity.y = -this.velocity.y
+    } else {
+        this.velocity.y += 1
+    }
+
+    this.y += this.velocity.y
+    
 }
 
 // Implementation
-let objects
+let stars
 function init() {
-    objects = []
+    stars = []
 
-    for (let i = 0; i < 400; i++) {
-        // objects.push();
+    for (let i = 0; i < 1; i++) {
+        stars.push(new Star(canvas.width / 2, 30, 30, 'blue'));
     }
 }
 
@@ -60,11 +68,9 @@ function init() {
 function animate() {
     requestAnimationFrame(animate)
     c.clearRect(0, 0, canvas.width, canvas.height)
-
-    c.fillText('HTML CANVAS BOILERPLATE', mouse.x, mouse.y)
-    // objects.forEach(object => {
-    //  object.update();
-    // });
+    stars.forEach(star => {
+      star.update();
+     });
 }
 
 init()
